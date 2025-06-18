@@ -1,0 +1,23 @@
+# 更新 .gitignore
+cat >> .gitignore << EOF
+# 环境变量文件
+.env
+*.env
+
+# API密钥和配置
+config.ini
+secrets.txt
+
+# 输出文件
+data/output/results/*.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+venv/
+
+# IDE
+.vscode/
+.DS_Store
+EOF
