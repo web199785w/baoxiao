@@ -19,26 +19,34 @@ from dotenv import load_dotenv
 from db_utils import get_conn, get_client_ip
 from datetime import timezone          # 用于带时区时间戳
 import pymysql                         # finally 里 close 连接用
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
 
 # 加载环境变量
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # 允许前端跨域访问
 
-# app = Flask(__name__)
-
-# # 配置 CORS - 只允许特定域名访问
-# CORS(app, resources={
-#     r"/api/*": {
-#         "origins": ["https://reim-apply.fivepointtex.com"],
-#         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-#         "allow_headers": ["Content-Type", "Authorization"],
-#         "expose_headers": ["Content-Disposition"]  # 重要：允许前端读取下载文件名
-#     }
-# })
+# 配置 CORS - 根据环境变量决定是否允许所有来源
+# 生产环境建议只允许特定域名，开发环境可以允许所有来源
+if os.getenv('FLASK_ENV') == 'production':
+    # 生产环境：只允许特定域名访问
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["https://reim-apply.fivepointtex.com"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Disposition"]  # 重要：允许前端读取下载文件名
+        }
+    })
+else:
+    # 开发环境：允许所有来源（调试用）
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Disposition"]
+        }
+    })
 
 # 配置路径
 PROJECT_ROOT = Path(__file__).parent.parent
